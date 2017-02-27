@@ -8,4 +8,4 @@ class Frame:
         # x values of the last n fits of the line, using a deque for rolling storage
         self.previous_heatmaps = collections.deque(maxlen=n_iterations)
         # average x values of the fitted line over the last n iterations
-        self.averaged_heatmap = None
+        self.averaged_heatmap = {}

@@ -44,6 +44,51 @@ def draw_labeled_bboxes(img, labels):
     # Return the image
     return img
 
+
+def avg_labeled_bboxes(heatmaps):
+    # Iterate through all detected cars
+    labels = heatmaps.previous_heatmaps
+    bboxes = heatmaps.averaged_heatmap
+    print('length of labels: ' + str(len(labels)))
+    for label in labels:
+        for car_number in range(1, label[1] + 1):
+            # Find pixels with each car_number label value
+            nonzero = (label[0] == car_number).nonzero()
+            # Identify x and y values of those pixels
+            nonzeroy = np.array(nonzero[0])
+            nonzerox = np.array(nonzero[1])
+            # Define a bounding box based on min/max x and y
+            print('length of bboxes: ' + str(len(bboxes)))
+            if len(bboxes) > 0:
+                old_box = bboxes[car_number]
+                print('old box')
+                print(old_box)
+                print('nonzerox')
+                print(np.min(nonzerox))
+                minx = old_box[0][0] + np.min(nonzerox)
+                miny = old_box[0][1] + np.min(nonzeroy)
+                maxx = old_box[1][0] + np.max(nonzerox)
+                maxy = old_box[1][1] + np.max(nonzeroy)
+            else:
+                minx = np.min(nonzerox)
+                miny = np.min(nonzeroy)
+                maxx = np.max(nonzerox)
+                maxy = np.max(nonzeroy)
+
+            bboxes[car_number] = ((minx, miny), (maxx, maxy))
+
+    for key, value in bboxes.items():
+        print('dividing')
+        minx = float(value[0][0])/len(labels)
+        miny = float(value[0][1])/len(labels)
+        maxx = float(value[1][0])/len(labels)
+        maxy = float(value[1][1])/len(labels)
+        bboxes[key] = ((minx, miny), (maxx, maxy))
+
+    print(bboxes)
+        # Return the image
+    return None
+
     # def runHeat(self):
     #     # Read in a pickle file with bboxes saved
     #     # Each item in the "all_bboxes" list will contain a

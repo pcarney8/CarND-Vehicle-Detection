@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 
+from Frame import Frame
 from Line import Line
 from utils import Utils
 import matplotlib.image as mpimg
@@ -197,7 +198,8 @@ class VehicleFinder:
         ystart = 400
         ystop = 656
         heatmaps = []
-        heatmap_sum = np.zeros((720, 1280)).astype(np.float64)
+        labels = np.zeros((720, 1280)).astype(np.float64)
+        heatmaps = Frame(5)
 
         # while the video is open, process images
         while video.isOpened():
@@ -211,7 +213,7 @@ class VehicleFinder:
 
             if len(all_boxes) >= 1:
                 heat = np.zeros_like(image[:, :, 0]).astype(np.float)
-                # Add heat t    o each box in box list
+                # Add heat to each box in box list
                 heat = heatMapUtils.add_heat(heat, all_boxes)
 
                 # Apply threshold to help remove false positives
@@ -220,21 +222,23 @@ class VehicleFinder:
                 # Visualize the heatmap when displaying
                 heatmap = np.clip(heat, 0, 255)
 
-                heatmap_sum += heatmap
-                heatmaps.append(heat)
+                heatmaps.previous_heatmaps.append(label(heatmap))
+                # heatmap_sum += heatmap
+                # heatmaps.append(heat)
 
                 # subtract off old heat map to keep running sum of last n heatmaps
-                if len(heatmaps) > 5:
-                    old_heatmap = heatmaps.pop(0)
-                    heatmap_sum -= old_heatmap
-                    heatmap_sum = np.clip(heatmap_sum, 0.0, 1000000.0)
+                # if len(heatmaps) > 5:
+                #     old_heatmap = heatmaps.pop(0)
+                #     heatmap_sum -= old_heatmap
+                #     heatmap_sum = np.clip(heatmap_sum, 0.0, 1000000.0)
 
                 # Find final boxes from heatmap using label function
-                labels = label(heatmap_sum)
-                draw_img = heatMapUtils.draw_labeled_bboxes(np.copy(image), labels)
+                # labels = label(heatmap_sum)
+                heatMapUtils.avg_labeled_bboxes(heatmaps)
+                # draw_img = heatMapUtils.draw_labeled_bboxes(np.copy(image), labels)
 
             # Write the output
-            out.write(draw_img)
+            # out.write(draw_img)
             # show the frames with the lane marked
             # cv2.imshow('frame', result)
 
