@@ -12,10 +12,11 @@ from lesson_functions import *
 # Define a single function that can extract features using hog sub-sampling and make predictions
 def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size, hist_bins):
     heatmap = np.zeros_like(img[:,:,0])
-    img = img.astype(np.float32) / 255
+    # print(img)
+    # img = img.astype(np.float32) / 255
 
     img_tosearch = img[ystart:ystop, :, :]
-    ctrans_tosearch = convert_color(img_tosearch, conv='RGB2YCrCb')
+    ctrans_tosearch = convert_color(img_tosearch, conv='RGB2HSV')
     if scale != 1:
         imshape = ctrans_tosearch.shape
         ctrans_tosearch = cv2.resize(ctrans_tosearch, (np.int(imshape[1] / scale), np.int(imshape[0] / scale)))
@@ -42,6 +43,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
 
     boxes = []
 
+    # Slide through the window and predict if a car is there
     for xb in range(nxsteps):
         for yb in range(nysteps):
             ypos = yb * cells_per_step
@@ -66,13 +68,15 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
             test_features = X_scaler.transform(
                 np.hstack((spatial_features, hist_features, hog_features)).reshape(1, -1))
 
+            # Predict if it's a car
             test_prediction = svc.predict(test_features)
 
             # # For predictions using probability
             # test_prediction = svc.predict_proba(test_features)
             # tp = test_prediction[0]
-            #
-            # if tp[1] > 0.6:
+
+            # Add box to our list of boxes if we think it's a car
+            # if tp[1] > 0.95:
             if test_prediction == 1:
                 xbox_left = np.int(xleft * scale)
                 ytop_draw = np.int(ytop * scale)
@@ -88,6 +92,7 @@ def find_cars(img, ystart, ystop, scale, svc, X_scaler, orient, pix_per_cell, ce
 def find_cars_multi_scale(img, ystart, ystop, scales, svc, X_scaler, orient, pix_per_cell, cell_per_block, spatial_size,
                           hist_bins):
     all_boxes = []
+    # print(img)
     draw_img = np.copy(img)
 
     for scale in scales:
@@ -99,13 +104,10 @@ def find_cars_multi_scale(img, ystart, ystop, scales, svc, X_scaler, orient, pix
             all_boxes.append(boxes)
     #     # FOR DEBUGGING:
     #     print(len(boxes))
-    #     print(boxes)
     #     for box in boxes:
     #         if len(box) == 2:
     #             cv2.rectangle(draw_img, box[0],
     #                           box[1], (0, 0, 255), 6)
-    # print(len(all_boxes))
-    # print(all_boxes)
     # plt.imshow(draw_img)
     # plt.show()
     return all_boxes
