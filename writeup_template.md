@@ -37,7 +37,9 @@ I started by reading all the `vehicle` and `non-vehicle` images, along with sepa
 ####2. Explain how you settled on your final choice of HOG parameters.
 
 I tried various combinations of parameters and found a lot of interesting things happening. I ran through a lot of different configurations (which can be seen below) and then realized that forming my training data selection is very important. My final choices were: 
-```self.orient = 9  # HOG orientations
+
+```
+self.orient = 9  # HOG orientations
 self.pix_per_cell = 8  # HOG pixels per cell
 self.cell_per_block = 2  # HOG cells per block
 self.hog_channel = "ALL"  # Can be 0, 1, 2, or "ALL"
@@ -47,7 +49,8 @@ self.scales = [1, 1.25, 1.5, 2]
 ```
 Most of these choices are reflected in the youtube walkthrough, and were definitely show to reflect the best selection when running through all of the following configurations:
         
-```.7174 -> SVC linear, prob, spatial=(16,16) color_space=HSV 
+```
+.7174 -> SVC linear, prob, spatial=(16,16) color_space=HSV 
 .7175 -> SVC linear, prob, C=1.25, spatial=(16,16) bins=16 color_space=HSV
 .6947 -> SVC linear, prob, C=1.25, spatial=(32,32) bins=32 color_space=HSV
 .6949 -> SVC linear, prob, C=1.5, spatial=(32,32) bins=32 color_space=HSV
@@ -66,6 +69,7 @@ Most of these choices are reflected in the youtube walkthrough, and were definit
 .9821 -> LinearSVC, C=1.0, spatial=(32,32) bins=32 color_space=YCrCb **
 .9883 -> LinearSVC, C=1.0, spatial=(32,32) bins=32 color_space=HSV **
 ```
+
 \* changed my training data to use the Extra folder for non-vehicles, instead of the GTI folder. I added a small amount of GTI data to even out my vehicle/non-vehicle ratio
 
 ** changed my training data set again to use all the time-series data as training data and none in the testing data
