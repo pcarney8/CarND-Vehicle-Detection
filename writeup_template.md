@@ -88,6 +88,7 @@ I found that which training data set I selected was very important to training t
 
 I performed my sliding window search on lines 46 to 85 of the `hog_subsample.py` python file. I actually created another method to perform multiple scales (lines 91 through 112 of `hog_subsample.py`). I thought this was a good idea because cars would change in scale as they move closer or further.
 
+I chose a size of 64x64 mainly because 64x64 was same as our training data image size. I realize we are changing scales, but I think it's a nice way of keeping in line with the training data. The overlap of 0.5 I think is sufficient because my pipeline still ran quickly (with the LinearSVC and no probability), covered all of the desired area, and identified plenty of locations of cars. If we needed compute-time needed to be closer to real-time, I would consider reducing this overlap. I used `[1, 1.25, 1.5, 2]` for my scales, I think this covers a large spectrum of sizes, at one point I was using 0.7 to 2 in increments of 1/10th, which was a bit of overkill and caused my pipeline to run very slow. I think having a few different scales is necessary, but too many can become very costly in terms of compute-time. If I had a GPU or something similar to what might run in a Self-Driving Car I would interested to see how many scales we could get away with using.
 
 ####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
